@@ -53,7 +53,6 @@ def init_user_stats(user_id):
         stats[user_id] = {
             'images': 0,
             'videos': 0,
-            'last_reset': datetime.now().isoformat(),
             'last_media': None,
             'streak': 0,
             'longest_streak': 0
@@ -79,7 +78,6 @@ async def on_ready():
         print(f"تم مزامنة {len(synced)} من الأوامر")
     except Exception as e:
         print(f"حدث خطأ أثناء مزامنة الأوامر: {e}")
-    weekly_reset.start()
     check_streaks.start()
 
 @bot.event
@@ -105,12 +103,6 @@ async def on_message(message):
         user_stats['last_media'] = now.isoformat()
 
     await bot.process_commands(message)
-
-@tasks.loop(hours=168)  # أسبوع كامل
-async def weekly_reset():
-    """إعادة تعيين الإحصائيات أسبوعياً"""
-    stats.clear()
-    print("تم إعادة تعيين الإحصائيات الأسبوعية")
 
 @tasks.loop(hours=24)
 async def check_streaks():
@@ -309,7 +301,6 @@ async def reset_command(ctx):
         stats[user_id] = {
             'images': 0,
             'videos': 0,
-            'last_reset': datetime.now().isoformat(),
             'last_media': None,
             'streak': 0,
             'longest_streak': 0
